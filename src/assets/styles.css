@@ -1,0 +1,8 @@
+body {
+  background: linear-gradient(
+    to right,
+    rgba(126, 64, 246, 1),
+    rgba(80, 139, 252, 1)
+  );
+  font-family: "Fredoka", sans-serif;
+}
