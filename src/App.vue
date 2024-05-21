@@ -15,21 +15,16 @@
       <div v-if="activeMenu === 'todos'">
         <!-- Fitur Todos -->
         <h2>Todos</h2>
-        <!-- Tambahkan kode todos di sini -->
         <div class="app">
           <h1>Aktivitas Hari Ini</h1>
           <div class="container">
-            <input v-model="kegiatanBaru" @keyup.enter="tambahKegiatan" placeholder="Kegiatan apa yang akan kamu lakukan hari ini (Enter)" style="border: 2px solid black;"/>
-            <ul>
-              <li v-for="(kegiatan, index) in kegiatanList" :key="index" v-show="kegiatan.tampil !== false">
-                <input type="checkbox" v-model="kegiatan.selesai" @change="ubahStatusKegiatan(index)">
-                <span :class="{ 'selesai': kegiatan.selesai }" :style="{'text-decoration': kegiatan.selesai ? 'line-through' : 'none'}">{{ kegiatan.nama }}</span>
-                <button @click="ubahStatusKegiatan(index)">
-                  {{ kegiatan.selesai ? 'Belum Selesai' : 'Selesai' }}
-                </button>
-                <button @click="hapusKegiatan(index)">Batal</button>
-              </li>
-            </ul>
+            <input
+              v-model="kegiatanBaru"
+              @keyup.enter="tambahKegiatan"
+              placeholder="Kegiatan apa yang akan kamu lakukan hari ini (Enter)"
+              style="border: 2px solid black;"
+            />
+            <TodoList :todos="kegiatanList" @doneTodo="ubahStatusKegiatan" @deleteTodo="hapusKegiatan" />
             <div class="tampilan">
               <button @click="tampilkanBelumSelesai">Filter Belum Selesai</button>
               <button @click="tampilkanSemua">Tampilkan Semua</button>
@@ -57,71 +52,71 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'App',
-  data() {
-    return {
-      activeMenu: 'todos',
-      users: [],
-      posts: [],
-      selectedUser: null,
-      kegiatanBaru: '',
-      kegiatanList: [
-        { nama: 'nugas', selesai: false, tampil: true },
-      ],
-    };
-  },
-  methods: {
-    showTodos() {
-      this.activeMenu = 'todos';
-    },
-    showPosts() {
-      this.activeMenu = 'posts';
-    },
-    tambahKegiatan() {
-      if (this.kegiatanBaru !== '') {
-        this.kegiatanList.push({ nama: this.kegiatanBaru, selesai: false, tampil: true });
-        this.kegiatanBaru = '';
-      }
-    },
-    hapusKegiatan(index) {
-      this.kegiatanList.splice(index, 1);
-    },
-    ubahStatusKegiatan(index) {
-      this.kegiatanList[index].selesai = !this.kegiatanList[index].selesai;
-    },
-    tampilkanBelumSelesai() {
-      this.kegiatanList.forEach((kegiatan) => {
-        kegiatan.tampil = !kegiatan.selesai;
-      });
-    },
-    tampilkanSemua() {
-      this.kegiatanList.forEach((kegiatan) => (kegiatan.tampil = true));
-    },
-  },
-  mounted() {
-    // Ambil data user dari API
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then(response => response.json())
-      .then(data => {
-        this.users = data;
-      });
+<script setup>
+import { ref, onMounted, computed } from 'vue';
+import TodoList from './components/TodoList.vue'
+import TodoItem from './components/TodoItem.vue';
 
-    // Ambil data postingan dari API
-    fetch('https://jsonplaceholder.typicode.com/posts')
-      .then(response => response.json())
-      .then(data => {
-        this.posts = data;
-      });
-  },
-  computed: {
-    filteredPosts() {
-      // Filter postingan berdasarkan user yang dipilih
-      return this.posts.filter(post => post.userId === parseInt(this.selectedUser));
-    }
+const activeMenu = ref('todos');
+const users = ref([]);
+const posts = ref([]);
+const selectedUser = ref(null);
+const kegiatanBaru = ref('');
+const kegiatanList = ref([{ nama: 'nugas', selesai: false, tampil: true }]);
+
+const showTodos = () => {
+  activeMenu.value = 'todos';
+};
+
+const showPosts = () => {
+  activeMenu.value = 'posts';
+};
+
+const tambahKegiatan = () => {
+  if (kegiatanBaru.value !== '') {
+    kegiatanList.value.push({ nama: kegiatanBaru.value, selesai: false, tampil: true });
+    kegiatanBaru.value = '';
   }
 };
+
+const hapusKegiatan = (index) => {
+  kegiatanList.value.splice(index, 1);
+};
+
+const ubahStatusKegiatan = (index) => {
+  kegiatanList.value[index].selesai = !kegiatanList.value[index].selesai;
+};
+
+const tampilkanBelumSelesai = () => {
+  kegiatanList.value.forEach((kegiatan) => {
+    kegiatan.tampil = !kegiatan.selesai;
+  });
+};
+
+const tampilkanSemua = () => {
+  kegiatanList.value.forEach((kegiatan) => (kegiatan.tampil = true));
+};
+
+onMounted(() => {
+  // Ambil data user dari API
+  fetch('https://jsonplaceholder.typicode.com/users')
+    .then((response) => response.json())
+    .then((data) => {
+      users.value = data;
+    });
+
+  // Ambil data postingan dari API
+  fetch('https://jsonplaceholder.typicode.com/posts')
+    .then((response) => response.json())
+    .then((data) => {
+      posts.value = data;
+    });
+});
+
+const filteredPosts = computed(() => {
+  // Filter postingan berdasarkan user yang dipilih
+  return posts.value.filter((post) => post.userId === parseInt(selectedUser.value));
+});
 </script>
 
 <style scoped>
