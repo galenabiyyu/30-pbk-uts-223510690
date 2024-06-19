@@ -11,20 +11,22 @@
           <div class="row gx-2">
             <div class="col-auto">
               <button
-                class="btn"
+                class="btn d-flex align-items-center"
                 :class="[todo.selesai ? 'btn-outline-secondary' : 'btn-outline-success']"
                 @click="handleDone"
               >
-                <font-awesome-icon icon="circle-check" />
+                <font-awesome-icon icon="circle-check" class="me-1" />
+                Done
               </button>
             </div>
             <div class="col-auto">
               <button
-                class="btn"
+                class="btn d-flex align-items-center"
                 :class="[todo.selesai ? 'btn-outline-secondary' : 'btn-outline-danger']"
                 @click="handleDelete"
               >
-                <font-awesome-icon icon="eraser" />
+                <font-awesome-icon icon="eraser" class="me-1" />
+                Delete
               </button>
             </div>
           </div>
@@ -55,6 +57,17 @@
   <style scoped>
   .text-decoration-line-through {
     text-decoration: line-through;
+  }
+  
+  /* Styling for the buttons */
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .me-1 {
+    margin-right: 0.25rem;
   }
   </style>
   
